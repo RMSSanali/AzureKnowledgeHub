@@ -85,10 +85,12 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+// Swagger is enabled for thesis/demo testing in the Azure App Service deployment.
+app.UseSwagger();
+app.UseSwaggerUI();
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
     await app.Services.SeedAsync();
 }
 
