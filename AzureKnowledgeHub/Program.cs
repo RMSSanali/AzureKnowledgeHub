@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
-const string DevelopmentFrontendCorsPolicy = "DevelopmentFrontend";
+const string FrontendCorsPolicy = "FrontendCorsPolicy";
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' was not found.");
@@ -17,14 +17,15 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(connectionString);
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(DevelopmentFrontendCorsPolicy, policy =>
+    options.AddPolicy(FrontendCorsPolicy, policy =>
     {
         policy
             .WithOrigins(
                 "http://localhost:5173",
                 "http://localhost:5174",
                 "http://127.0.0.1:5173",
-                "http://127.0.0.1:5174")
+                "http://127.0.0.1:5174",
+                "https://gray-tree-043c17603.7.azurestaticapps.net")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -95,11 +96,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseCors(DevelopmentFrontendCorsPolicy);
-}
+app.UseCors(FrontendCorsPolicy);
 
 app.UseAuthentication();
 app.UseAuthorization();
