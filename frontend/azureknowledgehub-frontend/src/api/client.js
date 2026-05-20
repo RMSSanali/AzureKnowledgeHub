@@ -92,6 +92,13 @@ export function loginUser(credentials) {
   });
 }
 
+export function registerUser(user) {
+  return request('/api/auth/register', {
+    method: 'POST',
+    body: user,
+  });
+}
+
 export function getProfile() {
   return request('/api/profile');
 }

@@ -154,6 +154,16 @@ h3 {
   border-color: #b8c4d3;
 }
 
+.login-panel .text-button {
+  min-height: auto;
+  padding: 0;
+  color: #236b63;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  text-decoration: underline;
+}
+
 .user-facts {
   display: flex;
   flex-wrap: wrap;

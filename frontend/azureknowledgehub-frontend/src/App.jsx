@@ -9,6 +9,7 @@ import {
   getProfile,
   getStoredToken,
   loginUser,
+  registerUser,
   searchLearningResources,
   setStoredToken,
   updateLearningResource,
@@ -104,6 +105,17 @@ function App() {
       clearStoredToken();
       setCurrentUser(null);
       setAuthError('Login failed. Check the username/email and password.');
+    } finally {
+      setAuthLoading(false);
+    }
+  }
+
+  async function handleRegisterLearner(user) {
+    setAuthLoading(true);
+    setAuthError('');
+
+    try {
+      await registerUser(user);
     } finally {
       setAuthLoading(false);
     }
@@ -229,6 +241,7 @@ function App() {
             error={authError}
             onLogin={handleLogin}
             onLogout={handleLogout}
+            onRegister={handleRegisterLearner}
           />
         </div>
       </section>
