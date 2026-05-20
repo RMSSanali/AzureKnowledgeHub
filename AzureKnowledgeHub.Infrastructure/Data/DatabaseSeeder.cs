@@ -7,16 +7,29 @@ namespace AzureKnowledgeHub.Infrastructure.Data;
 
 public static class DatabaseSeeder
 {
-    public static async Task SeedAsync(this IServiceProvider services)
+    public static async Task SeedAsync(this IServiceProvider services, bool onlyWhenDatabaseIsEmpty = false)
     {
         using var scope = services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AzureKnowledgeHubDbContext>();
         var passwordService = scope.ServiceProvider.GetRequiredService<IPasswordService>();
 
+        if (onlyWhenDatabaseIsEmpty && !await IsDatabaseEmptyAsync(dbContext))
+        {
+            return;
+        }
+
         await SeedCategoriesAsync(dbContext);
         await SeedTagsAsync(dbContext);
         await SeedLearningResourcesAsync(dbContext);
-        await SeedDevelopmentAdminAsync(dbContext, passwordService);
+        await SeedDemoAdminAsync(dbContext, passwordService);
+    }
+
+    private static async Task<bool> IsDatabaseEmptyAsync(AzureKnowledgeHubDbContext dbContext)
+    {
+        return !await dbContext.Users.AnyAsync() &&
+            !await dbContext.Categories.AnyAsync() &&
+            !await dbContext.Tags.AnyAsync() &&
+            !await dbContext.LearningResources.AnyAsync();
     }
 
     private static async Task SeedCategoriesAsync(AzureKnowledgeHubDbContext dbContext)
@@ -296,7 +309,7 @@ public static class DatabaseSeeder
         await dbContext.SaveChangesAsync();
     }
 
-    private static async Task SeedDevelopmentAdminAsync(
+    private static async Task SeedDemoAdminAsync(
         AzureKnowledgeHubDbContext dbContext,
         IPasswordService passwordService)
     {

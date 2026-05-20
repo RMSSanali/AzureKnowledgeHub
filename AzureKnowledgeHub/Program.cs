@@ -94,6 +94,10 @@ if (app.Environment.IsDevelopment())
 {
     await app.Services.SeedAsync();
 }
+else if (app.Environment.IsProduction())
+{
+    await app.Services.SeedAsync(onlyWhenDatabaseIsEmpty: true);
+}
 
 app.UseHttpsRedirection();
 app.UseCors(FrontendCorsPolicy);
