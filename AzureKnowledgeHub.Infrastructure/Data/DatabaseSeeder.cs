@@ -1,6 +1,7 @@
 using AzureKnowledgeHub.Application.Interfaces;
 using AzureKnowledgeHub.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AzureKnowledgeHub.Infrastructure.Data;
@@ -12,6 +13,7 @@ public static class DatabaseSeeder
         using var scope = services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AzureKnowledgeHubDbContext>();
         var passwordService = scope.ServiceProvider.GetRequiredService<IPasswordService>();
+        var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
         if (onlyWhenDatabaseIsEmpty && !await IsDatabaseEmptyAsync(dbContext))
         {
@@ -21,7 +23,7 @@ public static class DatabaseSeeder
         await SeedCategoriesAsync(dbContext);
         await SeedTagsAsync(dbContext);
         await SeedLearningResourcesAsync(dbContext);
-        await SeedDemoAdminAsync(dbContext, passwordService);
+        await SeedDemoAdminAsync(dbContext, passwordService, configuration);
     }
 
     private static async Task<bool> IsDatabaseEmptyAsync(AzureKnowledgeHubDbContext dbContext)
@@ -311,8 +313,18 @@ public static class DatabaseSeeder
 
     private static async Task SeedDemoAdminAsync(
         AzureKnowledgeHubDbContext dbContext,
-        IPasswordService passwordService)
+        IPasswordService passwordService,
+        IConfiguration configuration)
     {
+        if (!configuration.GetValue<bool>("SeedAdmin:Enabled"))
+        {
+            return;
+        }
+
+        var seedAdminPassword = configuration["SeedAdmin:Password"]
+            ?? throw new InvalidOperationException(
+                "SeedAdmin:Password must be configured when SeedAdmin:Enabled is true.");
+
         const string username = "admin";
         const string email = "admin@azureknowledgehub.local";
 
@@ -333,7 +345,7 @@ public static class DatabaseSeeder
             CreatedAt = DateTime.UtcNow
         };
 
-        admin.PasswordHash = passwordService.HashPassword(admin, "Admin123!");
+        admin.PasswordHash = passwordService.HashPassword(admin, seedAdminPassword);
 
         dbContext.Users.Add(admin);
         await dbContext.SaveChangesAsync();

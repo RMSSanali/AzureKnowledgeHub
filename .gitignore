@@ -9,6 +9,21 @@ obj/
 node_modules/
 dist/
 
+# Environment and local configuration
+.env
+.env.*
+!.env.example
+appsettings.Local.json
+appsettings.Production.json
+
+# Azure publishing and deployment metadata
+**/Properties/PublishProfiles/
+**/Properties/ServiceDependencies/
+
+# Local Postman workspace state
+.postman/
+postman/
+
 # Logs
 *.log
 
