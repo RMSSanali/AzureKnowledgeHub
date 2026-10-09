@@ -212,7 +212,24 @@ POST /api/admin/users/admin        # Admin only
 
 ## Testing and QA
 
-The project includes unit tests focused on service-layer behavior, validation, password hashing, learning-resource operations, and search filtering.
+The project uses a combination of automated unit testing and manual API testing.
+
+### Automated unit testing
+
+The backend includes unit tests written with:
+
+- xUnit
+- Moq
+- FluentAssertions
+
+The automated tests cover:
+
+- Password hashing and password verification
+- Learning-resource creation and validation
+- Learning-resource updates and deletion
+- Search and filtering behavior
+- Pagination and invalid search arguments
+- Service-layer and repository interactions
 
 Run the tests from the repository root:
 
@@ -220,7 +237,17 @@ Run the tests from the repository root:
 dotnet test
 ```
 
-The API was also manually tested with Swagger UI and Postman. Test activities included:
+Latest local test result:
+
+```text
+10 passed
+0 failed
+0 skipped
+```
+
+### API testing
+
+The REST API was manually tested using Swagger UI and Postman. Test activities included:
 
 - Authentication requests
 - Learning-resource retrieval
@@ -228,6 +255,43 @@ The API was also manually tested with Swagger UI and Postman. Test activities in
 - Protected admin endpoints
 - HTTP status-code validation
 - JSON response validation
+
+### Role-based access testing
+
+The application has separate Learner and Administrator access paths.
+
+Learners can:
+
+- Register and log in
+- View their profile
+- Browse learning resources
+- Search and filter resources
+
+Administrators can additionally:
+
+- Create learning resources
+- Update learning resources
+- Delete learning resources
+- Access protected administrator endpoints
+
+### Test evidence
+
+![Unit-test results](docs/screenshots/unit-tests.png)
+
+![Swagger API documentation](docs/screenshots/swagger-api.png)
+
+![Postman API test](docs/screenshots/postman-learning-resources.png)
+
+### Testing limitations
+
+The current automated test suite focuses mainly on the service layer. Future QA improvements could include:
+
+- Controller tests
+- Integration tests with a test database
+- End-to-end frontend tests
+- Automated authorization tests
+- Continuous test execution in GitHub Actions
+- Performance testing for larger search datasets
 
 ## Security Notes
 
